@@ -1,6 +1,37 @@
 #include "stream.h"
 
-UniformGenerator::UniformGenerator(const uint8_t uniform_element_size) {
+// Generic methods
+void StreamGenerator::Insert(const Element& e) {
+	if(sliding_window_size == 0) {
+		elements_seen[e] = true;		
+	}
+	else {
+		sliding_window.push_front(e);
+		sliding_window.pop_back();
+	}
+}
+
+bool StreamGenerator::Has(const Element& e) {
+	if(sliding_window_size == 0) {
+		return elements_seen[e];
+	}
+	else {
+		for (uint8_t i = 0; i < sliding_window.size(); ++i) {
+			if(sliding_window.at(i) == e) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+}
+
+// UniformGenerator
+UniformGenerator::UniformGenerator(
+	const uint8_t uniform_element_size,
+	const int sliding_window_size_s
+) {
+	sliding_window_size = sliding_window_size_s;
 	/** Initialisation of the uniform random element generator */
 	std::random_device rd;
 	engine = std::independent_bits_engine<std::mt19937_64, element_size, std::uint64_t>();
@@ -15,15 +46,12 @@ Element UniformGenerator::Next() {
 	return Element(uniform_element_mask & engine());
 }
 
-void StreamGenerator::Insert(const Element& e) {
-	elements_seen[e] = true;
-}
-
-bool StreamGenerator::Has(const Element& e) {
-	return elements_seen[e];
-}
-
-RealGenerator::RealGenerator(const std::string& filename) {
+// RealGenerator
+RealGenerator::RealGenerator(
+	const std::string& filename,
+	const int sliding_window_size_s
+) {
+	sliding_window_size = sliding_window_size_s;
 	/** Constructor */
 
 	/* Clang/G++ have poor support for now
@@ -69,7 +97,7 @@ Element RealGenerator::Next() {
 	
 	if (!has_value) {
 		// The file has ended or no hash value could be found, return 0
-		return Element(0);
+		throw "Error while reading stream";
 	}
 	
 	// Otherwise return the current hash value

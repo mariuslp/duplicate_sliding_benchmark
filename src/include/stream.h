@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <cassert>
+#include <deque>
 
 #include "types.h"
 #include "logger.h"
@@ -29,9 +30,15 @@ struct StreamGenerator {
 	/** Class name*/
 	virtual std::string name() const { return "Generic Stream"; };
 
+	/** 0 for a perfect memory */
+	int sliding_window_size;
+
 private:
 	/** Storage of all seen elements for benchmarking purposes. */
 	std::unordered_map<Element, bool> elements_seen;
+
+	/** Same, but on a sliding window. User choses which mode to use. */
+	 std::deque<Element> sliding_window;
 };
 
 /** Uniform stream generator */
@@ -51,8 +58,10 @@ struct UniformGenerator : StreamGenerator {
 	 * (https://en.wikipedia.org/wiki/Birthday_problem#Collision_counting)
 	 *
 	 * Obviously must be <= element_size
+	 * 
+	 * @param int sliding_window: size of the sliding window. 0 for infinite window
 	 */
-	UniformGenerator(const std::uint8_t uniform_element_size);
+	UniformGenerator(const std::uint8_t uniform_element_size, const int sliding_window_size_s);
 
 	/** Next output from the generator */
 	Element Next() override;
@@ -73,7 +82,7 @@ private:
 struct RealGenerator : StreamGenerator {
 
 	/** Constructor */
-	RealGenerator(const std::string& filename);
+	RealGenerator(const std::string& filename, const int sliding_window_size_s);
 
 	/* Destructor */
 	~RealGenerator();

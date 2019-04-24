@@ -22,16 +22,16 @@ void run_tests() {
 	const auto stream_length	= 1500000;
 
 	// Number of tested filters 
-	const auto num_filters 		= 7;
+	const auto num_filters 		= 6;
 	
 	// Number of streams
 	const auto num_streams 		= 3;
 
-        // Number of memory variations for each filters
+	// Number of memory variations for each filters
 	const auto num_multipliers 	= 4;
 
 	// Amount of memory available to filters
-	const auto memory 		= 1000000; // 10e6
+	const auto memory 		= 100000; // 10e6
 
 	// Memory variations for each filter
 	double memory_multipliers [num_multipliers] = {8, 1, 0.1, 0.01};
@@ -46,9 +46,9 @@ void run_tests() {
 
 	// Assemble the stream collection
 	// streams.push_back(std::make_unique<UniformGenerator>(30));
-	streams.push_back(std::make_unique<UniformGenerator>(27));
-	streams.push_back(std::make_unique<UniformGenerator>(24));
-	streams.push_back(std::make_unique<RealGenerator>("hash_sorted.dat"));
+	streams.push_back(std::make_unique<UniformGenerator>(27, 10000));
+	streams.push_back(std::make_unique<UniformGenerator>(24, 10000));
+	streams.push_back(std::make_unique<RealGenerator>("hash_sorted.dat", 10000));
 	
 	double stream_duplicates [num_streams];
 
@@ -64,7 +64,7 @@ void run_tests() {
                 filters.push_back(std::make_unique<CuckooFilter>(memsize, 3, 1));
                 filters.push_back(std::make_unique<StableBloomFilter>(memsize, 2, 2, 0.02));
                 filters.push_back(std::make_unique<A2Filter>(memsize, 0.1));
-                filters.push_back(std::make_unique<bDecayingBloomFilter>(memsize, 6000));
+                // filters.push_back(std::make_unique<bDecayingBloomFilter>(memsize, 6000));
         }
 
         assert(filters.size() == num_filters * num_multipliers);
