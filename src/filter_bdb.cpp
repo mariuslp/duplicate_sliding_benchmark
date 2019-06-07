@@ -1,6 +1,7 @@
 #include "filter_bdb.h"
 
 bDecayingBloomFilter::bDecayingBloomFilter(uint64_t memory_size, uint64_t W) {
+	Log("BDBF, M=", memory_size, ", W=", W);
 	// Ensures counter_size >= 2
 	assert(memory_size > W / std::log(2));
 	
