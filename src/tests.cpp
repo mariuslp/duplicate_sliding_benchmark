@@ -19,7 +19,7 @@ void run_tests() {
 	// -----
 
 	// Length of the test stream
-	const auto stream_length	= 10000000;
+	const auto stream_length	= 1000000; //10000000;
 
 	// Number of tested filters 
 	const auto num_filters 		= 5;
@@ -28,16 +28,16 @@ void run_tests() {
 	const auto num_streams 		= 2;
 
         // Number of memory variations for each filters
-	const auto num_multipliers 	= 9;
+	const auto num_multipliers 	= 1; //9;
 
 	// Amount of memory available to filters
 	const auto memory 		= 1000000; // 10e6
 
 	// Memory variations for each filter
-	double memory_multipliers [num_multipliers] = {200, 100, 60, 30, 10, 1, 0.1, 0.01, 0.001};
+	double memory_multipliers [num_multipliers] = {1}; //{200, 100, 60, 30, 10, 1, 0.1, 0.01, 0.001};
 
 	// duh
-	int sliding_window_size = 6000;
+	int sliding_window_size = 100000;
 
 	// Collection of streams
 	std::vector<std::unique_ptr<StreamGenerator> > streams;

@@ -1,13 +1,19 @@
 #include "stream.h"
+#include "logger.h"
 
 // Generic methods
 void StreamGenerator::Insert(const Element& e) {
 	if(sliding_window_size == 0) {
-		elements_seen[e] = true;		
+		// Log("no sliding!");
+		elements_seen[e] = true;
 	}
 	else {
+		// Log("sliding!");
 		sliding_window.push_front(e);
-		sliding_window.pop_back();
+
+		if(sliding_window.size() > sliding_window_size) {
+			sliding_window.pop_back();
+		}
 	}
 }
 
@@ -16,7 +22,7 @@ bool StreamGenerator::Has(const Element& e) {
 		return elements_seen[e];
 	}
 	else {
-		for (uint8_t i = 0; i < sliding_window.size(); ++i) {
+		for (int i = 0; i < sliding_window.size(); ++i) {
 			if(sliding_window.at(i) == e) {
 				return true;
 			}

@@ -97,7 +97,4 @@ struct RealGenerator : StreamGenerator {
 private:
 	/** Internal stream storage. Takes quite a lot of RAM (file is 2.5 GB...) */
 	std::ifstream stream_file;
-
-
-
 };
