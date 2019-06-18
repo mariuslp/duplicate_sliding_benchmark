@@ -43,13 +43,11 @@ private:
 	/** Storage of all seen elements for benchmarking purposes. */
 	std::unordered_map<Element, bool> elements_seen;
 
-	/** Same, but on a sliding window. User choses which mode to use.
-	 * is of the form i -> e, where e is the element at the i-th position of the sliding window
-	 */
-	 std::unordered_map<int, Element> sliding_window;
+	/** Same, but on a sliding window. User choses which mode to use. */
+	std::deque<Element> sliding_window;
 
-	/** The inverse of the previous. e maps to the stream indexes of the sliding window in which e was present. */
-	 std::unordered_map<Element, std::deque<int>> inverted_sliding_window;
+	/** e maps to a counter, keeping track of the number of occurrences of e in the sliding window. */
+	std::unordered_map<Element, int> counter_sliding_window;
 };
 
 /** Uniform stream generator */

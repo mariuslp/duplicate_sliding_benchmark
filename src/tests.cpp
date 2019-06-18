@@ -37,9 +37,8 @@ void run_tests() {
 	double memory_multipliers [num_multipliers] = {1}; //{200, 100, 60, 30, 10, 1, 0.1, 0.01, 0.001};
 
 	// duh
-	// int sliding_window_size = 0; //100000;
 	const auto num_sliding_window = 6;
-	int sliding_window_sizes [num_sliding_window] = {100, 1000, 10000, 100000, 1000000, 5000000};
+	int sliding_window_sizes [num_sliding_window] = {100, 1000, 10000, 100000, 1000000, 10000000};
 
 	// Collection of streams
 	std::vector<std::unique_ptr<StreamGenerator> > streams;
