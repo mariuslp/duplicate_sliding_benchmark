@@ -2,6 +2,23 @@
 #include "logger.h"
 
 // Generic methods
+
+void StreamGenerator::PopSlidingWindow() {
+	// Get the index and element
+	int index_to_remove = counter - sliding_window_size;
+	Element e_to_remove = sliding_window.at(index_to_remove);
+
+	// Remove from sliding_window
+	sliding_window.erase(index_to_remove);
+
+	// Remove from inverted_sliding_window
+	inverted_sliding_window.at(e_to_remove).pop_back();
+	if(empty(inverted_sliding_window[e_to_remove])) {  // Delete empty spots (saves memory)
+		inverted_sliding_window.erase(e_to_remove);
+	}
+}
+
+
 void StreamGenerator::Insert(const Element& e) {
 	if(sliding_window_size == 0) {
 		// Log("no sliding!");
@@ -9,10 +26,11 @@ void StreamGenerator::Insert(const Element& e) {
 	}
 	else {
 		// Log("sliding!");
-		sliding_window.push_front(e);
+		sliding_window[++counter] = e;
+		inverted_sliding_window[e].push_front(counter);
 
-		if(sliding_window.size() > sliding_window_size) {
-			sliding_window.pop_back();
+		if(counter > sliding_window_size) {
+			PopSlidingWindow();
 		}
 	}
 }
@@ -22,13 +40,15 @@ bool StreamGenerator::Has(const Element& e) {
 		return elements_seen[e];
 	}
 	else {
-		for (int i = 0; i < sliding_window.size(); ++i) {
-			if(sliding_window.at(i) == e) {
-				return true;
-			}
-		}
+		return !empty(inverted_sliding_window[e]);
 
-		return false;
+		// for (int i = 0; i < sliding_window.size(); ++i) {
+		// 	if(sliding_window.at(i) == e) {
+		// 		return true;
+		// 	}
+		// }
+
+		// return false;
 	}
 }
 

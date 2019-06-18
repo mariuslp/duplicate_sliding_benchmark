@@ -19,7 +19,7 @@ void run_tests() {
 	// -----
 
 	// Length of the test stream
-	const auto stream_length	= 1000000; //10000000;
+	const auto stream_length	= 150000000; //10000000;
 
 	// Number of tested filters 
 	const auto num_filters 		= 5;
@@ -27,7 +27,7 @@ void run_tests() {
 	// Number of streams
 	const auto num_streams 		= 2;
 
-        // Number of memory variations for each filters
+    // Number of memory variations for each filters
 	const auto num_multipliers 	= 1; //9;
 
 	// Amount of memory available to filters
@@ -37,7 +37,9 @@ void run_tests() {
 	double memory_multipliers [num_multipliers] = {1}; //{200, 100, 60, 30, 10, 1, 0.1, 0.01, 0.001};
 
 	// duh
-	int sliding_window_size = 100000;
+	// int sliding_window_size = 0; //100000;
+	const auto num_sliding_window = 6;
+	int sliding_window_sizes [num_sliding_window] = {100, 1000, 10000, 100000, 1000000, 5000000};
 
 	// Collection of streams
 	std::vector<std::unique_ptr<StreamGenerator> > streams;
@@ -47,35 +49,39 @@ void run_tests() {
 
 	auto t0 = std::chrono::high_resolution_clock::now();
 
-	// Assemble the stream collection
-	// streams.push_back(std::make_unique<UniformGenerator>(30, sliding_window_size));
-	//streams.push_back(std::make_unique<UniformGenerator>(27, sliding_window_size));
-	streams.push_back(std::make_unique<UniformGenerator>(26, sliding_window_size));
-	streams.push_back(std::make_unique<RealGenerator>("hash_sorted.dat", sliding_window_size));
+	for(auto W : sliding_window_sizes) {
+		// Assemble the stream collection
+		// streams.push_back(std::make_unique<UniformGenerator>(30, W));
+		//streams.push_back(std::make_unique<UniformGenerator>(27, W));
+		streams.push_back(std::make_unique<UniformGenerator>(26, W));
+	} // 2 loops for easier result reading
+	for(auto W : sliding_window_sizes) {
+		streams.push_back(std::make_unique<RealGenerator>("hash_sorted.dat", W));
+	}
 	
-	double stream_duplicates [num_streams];
+	double stream_duplicates [num_streams * num_sliding_window];
 
 	auto t1 = std::chrono::high_resolution_clock::now();
 
 	for(auto multiplier : memory_multipliers) {
 		uint64_t memsize = multiplier * memory;
 
-                filters.push_back(std::make_unique<SQFilter>(memsize, 1, 2, 1));
-                //filters.push_back(std::make_unique<QHTFilter>(memsize, 1, 3));
-                filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 3));
-                //filters.push_back(std::make_unique<QQHTDCompactFilter>(memsize, 1, 3));
-                filters.push_back(std::make_unique<CuckooFilter>(memsize, 3, 1));
-                filters.push_back(std::make_unique<StableBloomFilter>(memsize, 2, 2, 0.02));
-                filters.push_back(std::make_unique<A2Filter>(memsize, 0.1));
-                //filters.push_back(std::make_unique<bDecayingBloomFilter>(memsize, 6000));
-      }
+		filters.push_back(std::make_unique<SQFilter>(memsize, 1, 2, 1));
+		//filters.push_back(std::make_unique<QHTFilter>(memsize, 1, 3));
+		filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 3));
+		//filters.push_back(std::make_unique<QQHTDCompactFilter>(memsize, 1, 3));
+		filters.push_back(std::make_unique<CuckooFilter>(memsize, 3, 1));
+		filters.push_back(std::make_unique<StableBloomFilter>(memsize, 2, 2, 0.02));
+		filters.push_back(std::make_unique<A2Filter>(memsize, 0.1));
+		//filters.push_back(std::make_unique<bDecayingBloomFilter>(memsize, 6000));
+    }
 
-        assert(filters.size() == num_filters * num_multipliers);
-        assert(streams.size() == num_streams);
+	assert(filters.size() == num_filters * num_multipliers);
+	assert(streams.size() == num_streams * num_sliding_window);
 
-        // Result, for each filter of each stream (FPR and FNR)
-	double results [num_streams][num_multipliers][num_filters][2];
-        std::chrono::nanoseconds time_insertion [num_streams][num_multipliers][num_filters];
+    // Result, for each filter of each stream (FPR and FNR)
+	double results [num_streams * num_sliding_window][num_multipliers][num_filters][2];
+        std::chrono::nanoseconds time_insertion [num_streams * num_sliding_window][num_multipliers][num_filters];
 
 	auto t2 = std::chrono::high_resolution_clock::now();
 
@@ -112,7 +118,7 @@ void run_tests() {
 		// For each stream
 		auto& stream = streams.back();
 
-		Log("\t[Test] [Stream] New stream: ", stream->name());
+		Log("\t[Test] [Stream] New stream: ", stream->name(), ", sliding window of size ", stream->sliding_window_size);
 
 		// Create the stats data for each filter
 		std::map<uint64_t, std::unique_ptr<Statistics>> stats;
@@ -143,14 +149,14 @@ void run_tests() {
 
 			u = 0;
 			for (auto& filter : filters) {
-                                auto begin_nanosec = std::chrono::high_resolution_clock::now();
+				auto begin_nanosec = std::chrono::high_resolution_clock::now();
 				// Insert element in all filters
 				auto detected = filter->Insert(e);
                                 
-                                auto end_nanosec = std::chrono::high_resolution_clock::now();
+				auto end_nanosec = std::chrono::high_resolution_clock::now();
 
-                                // Store time needed
-                                time_insertion[s][u / num_filters][u % num_filters] += end_nanosec - begin_nanosec;
+				// Store time needed
+				time_insertion[s][u / num_filters][u % num_filters] += end_nanosec - begin_nanosec;
 				// Update filter's stats
 				stats[u++]->addEvent(Event(is_duplicate, detected));
 			}
@@ -197,7 +203,7 @@ void run_tests() {
 	
 	Log("\t[/Test] Tests finished.");
 	
-	for(size_t st = 0; st < num_streams; ++st) {
+	for(size_t st = 0; st < num_streams * num_sliding_window; ++st) {
 		Log("\t [Results] Stream #", st, " (", stream_duplicates[st], "% duplicates)");
 
 		std::cout << "Mem\\fil\t |";
@@ -234,7 +240,7 @@ void run_tests() {
         std::cout << std::endl << std::endl << "=============================" << std::endl << std::endl;
 
 
-        for(size_t st = 0; st < num_streams; ++st) {
+        for(size_t st = 0; st < num_streams * num_sliding_window; ++st) {
 		Log("\t [Results] Stream #", st, " (", stream_duplicates[st], "% duplicates)");
 
 		std::cout << "Mem\\fil\t |";
@@ -262,11 +268,6 @@ void run_tests() {
 
 		std::cout << std::endl;
 	}
-
-
-
-
-
 
 	Log("\t[Timings]");
 

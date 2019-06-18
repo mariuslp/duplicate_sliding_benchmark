@@ -33,12 +33,23 @@ struct StreamGenerator {
 	/** 0 for a perfect memory */
 	int sliding_window_size;
 
+	/** Counts the number of elements of the stream */
+	int counter = 0;
+
 private:
+	/** Deletes the last element of the sliding window (both sliding_window and inverted_sliding_window) */
+	void PopSlidingWindow();
+
 	/** Storage of all seen elements for benchmarking purposes. */
 	std::unordered_map<Element, bool> elements_seen;
 
-	/** Same, but on a sliding window. User choses which mode to use. */
-	 std::deque<Element> sliding_window;
+	/** Same, but on a sliding window. User choses which mode to use.
+	 * is of the form i -> e, where e is the element at the i-th position of the sliding window
+	 */
+	 std::unordered_map<int, Element> sliding_window;
+
+	/** The inverse of the previous. e maps to the stream indexes of the sliding window in which e was present. */
+	 std::unordered_map<Element, std::deque<int>> inverted_sliding_window;
 };
 
 /** Uniform stream generator */
