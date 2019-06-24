@@ -23,7 +23,7 @@ void StreamGenerator::Insert(const Element& e) {
 		sliding_window.push_front(e);
 		++counter_sliding_window[e];
 
-		if(counter > sliding_window_size) {
+		if(++stream_counter > sliding_window_size) {
 			PopSlidingWindow();
 		}
 	}

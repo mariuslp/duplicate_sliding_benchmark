@@ -34,7 +34,7 @@ struct StreamGenerator {
 	int sliding_window_size;
 
 	/** Counts the number of elements of the stream */
-	int counter = 0;
+	int stream_counter = 0;
 
 private:
 	/** Deletes the last element of the sliding window (both sliding_window and inverted_sliding_window) */

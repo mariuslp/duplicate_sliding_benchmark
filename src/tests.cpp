@@ -22,8 +22,8 @@ void run_tests() {
 	const auto stream_length	= 150000000; //10000000;
 
 	// Number of tested filters 
-	const auto num_filters 		= 5;
-	
+	const auto num_filters 		= 6; //5;
+
 	// Number of streams
 	const auto num_streams 		= 2;
 
@@ -37,8 +37,8 @@ void run_tests() {
 	double memory_multipliers [num_multipliers] = {1}; //{200, 100, 60, 30, 10, 1, 0.1, 0.01, 0.001};
 
 	// duh
-	const auto num_sliding_window = 6;
-	int sliding_window_sizes [num_sliding_window] = {100, 1000, 10000, 100000, 1000000, 10000000};
+	const auto num_sliding_window = 7;
+	int sliding_window_sizes [num_sliding_window] = {100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
 
 	// Collection of streams
 	std::vector<std::unique_ptr<StreamGenerator> > streams;
@@ -56,6 +56,7 @@ void run_tests() {
 	} // 2 loops for easier result reading
 	for(auto W : sliding_window_sizes) {
 		streams.push_back(std::make_unique<RealGenerator>("hash_sorted.dat", W));
+		// streams.push_back(std::make_unique<RealGenerator>("hash_test.dat", W));
 	}
 	
 	double stream_duplicates [num_streams * num_sliding_window];
@@ -66,13 +67,13 @@ void run_tests() {
 		uint64_t memsize = multiplier * memory;
 
 		filters.push_back(std::make_unique<SQFilter>(memsize, 1, 2, 1));
-		//filters.push_back(std::make_unique<QHTFilter>(memsize, 1, 3));
+		// //filters.push_back(std::make_unique<QHTFilter>(memsize, 1, 3));
 		filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 3));
-		//filters.push_back(std::make_unique<QQHTDCompactFilter>(memsize, 1, 3));
+		// //filters.push_back(std::make_unique<QQHTDCompactFilter>(memsize, 1, 3));
 		filters.push_back(std::make_unique<CuckooFilter>(memsize, 3, 1));
 		filters.push_back(std::make_unique<StableBloomFilter>(memsize, 2, 2, 0.02));
 		filters.push_back(std::make_unique<A2Filter>(memsize, 0.1));
-		//filters.push_back(std::make_unique<bDecayingBloomFilter>(memsize, 6000));
+		filters.push_back(std::make_unique<bDecayingBloomFilter>(memsize, 6000));
     }
 
 	assert(filters.size() == num_filters * num_multipliers);
@@ -236,37 +237,37 @@ void run_tests() {
 	}
 
 
-        std::cout << std::endl << std::endl << "=============================" << std::endl << std::endl;
+	// std::cout << std::endl << std::endl << "=============================" << std::endl << std::endl;
 
 
-        for(size_t st = 0; st < num_streams * num_sliding_window; ++st) {
-		Log("\t [Results] Stream #", st, " (", stream_duplicates[st], "% duplicates)");
+	// for(size_t st = 0; st < num_streams * num_sliding_window; ++st) {
+	// 	Log("\t [Results] Stream #", st, " (", stream_duplicates[st], "% duplicates)");
 
-		std::cout << "Mem\\fil\t |";
-		size_t c = 0;
-		for(auto& filter : filters) {
-			if (c < num_filters) {
-				std::cout << filter->name() << "\t |";
-				++c;
-			}
-			else {
-				break;
-			}
-		}
-		std::cout << std::endl;
+	// 	std::cout << "Mem\\fil\t |";
+	// 	size_t c = 0;
+	// 	for(auto& filter : filters) {
+	// 		if (c < num_filters) {
+	// 			std::cout << filter->name() << "\t |";
+	// 			++c;
+	// 		}
+	// 		else {
+	// 			break;
+	// 		}
+	// 	}
+	// 	std::cout << std::endl;
 
-		for(size_t m = 0; m < num_multipliers; ++m) {
-			std::cout << memory * memory_multipliers[m] << "\t |";
+	// 	for(size_t m = 0; m < num_multipliers; ++m) {
+	// 		std::cout << memory * memory_multipliers[m] << "\t |";
 
-			for(size_t f = 0; f < num_filters; ++f) {
-				std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(time_insertion[st][m][f]).count() / (double) stream_length
-					  << " \t\t | ";
-			}
-			std::cout << std::endl;
-		}
+	// 		for(size_t f = 0; f < num_filters; ++f) {
+	// 			std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(time_insertion[st][m][f]).count() / (double) stream_length
+	// 				  << " \t\t | ";
+	// 		}
+	// 		std::cout << std::endl;
+	// 	}
 
-		std::cout << std::endl;
-	}
+	// 	std::cout << std::endl;
+	// }
 
 	Log("\t[Timings]");
 
