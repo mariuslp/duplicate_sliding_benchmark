@@ -22,19 +22,19 @@ void run_tests() {
 	const auto stream_length	= 150000000; //10000000;
 
 	// Number of tested filters 
-	const auto num_filters 		= 6; //5;
+	const auto num_filters 		= 2; //5;
 
 	// Number of streams
 	const auto num_streams 		= 2;
 
     // Number of memory variations for each filters
-	const auto num_multipliers 	= 1; //9;
+	const auto num_multipliers 	= 2; //9;
 
 	// Amount of memory available to filters
 	const auto memory 		= 1000000; // 10e6
 
 	// Memory variations for each filter
-	double memory_multipliers [num_multipliers] = {1}; //{200, 100, 60, 30, 10, 1, 0.1, 0.01, 0.001};
+	double memory_multipliers [num_multipliers] = {0.1, 10}; //{200, 100, 60, 30, 10, 1, 0.1, 0.01, 0.001};
 
 	// duh
 	const auto num_sliding_window = 7;
@@ -53,6 +53,7 @@ void run_tests() {
 		// streams.push_back(std::make_unique<UniformGenerator>(30, W));
 		//streams.push_back(std::make_unique<UniformGenerator>(27, W));
 		streams.push_back(std::make_unique<UniformGenerator>(26, W));
+		// streams.push_back(std::make_unique<UniformGenerator>(2, W));
 	} // 2 loops for easier result reading
 	for(auto W : sliding_window_sizes) {
 		streams.push_back(std::make_unique<RealGenerator>("hash_sorted.dat", W));
@@ -66,13 +67,13 @@ void run_tests() {
 	for(auto multiplier : memory_multipliers) {
 		uint64_t memsize = multiplier * memory;
 
-		filters.push_back(std::make_unique<SQFilter>(memsize, 1, 2, 1));
+		// filters.push_back(std::make_unique<SQFilter>(memsize, 1, 2, 1));
 		// //filters.push_back(std::make_unique<QHTFilter>(memsize, 1, 3));
 		filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 3));
 		// //filters.push_back(std::make_unique<QQHTDCompactFilter>(memsize, 1, 3));
-		filters.push_back(std::make_unique<CuckooFilter>(memsize, 3, 1));
-		filters.push_back(std::make_unique<StableBloomFilter>(memsize, 2, 2, 0.02));
-		filters.push_back(std::make_unique<A2Filter>(memsize, 0.1));
+		// filters.push_back(std::make_unique<CuckooFilter>(memsize, 3, 1));
+		// filters.push_back(std::make_unique<StableBloomFilter>(memsize, 2, 2, 0.02));
+		// filters.push_back(std::make_unique<A2Filter>(memsize, 0.1));
 		filters.push_back(std::make_unique<bDecayingBloomFilter>(memsize, 6000));
     }
 
@@ -139,6 +140,10 @@ void run_tests() {
 		// Generate stream
 		for(auto i = 0; i < stream_length; ++i) {
 
+			if(i % 50000000 == 0) {
+				Log(i);
+			}
+			
 			// Get the next element
 			auto e = stream->Next();
 			auto is_duplicate = stream->Has(e);
@@ -154,6 +159,8 @@ void run_tests() {
 				auto detected = filter->Insert(e);
                                 
 				auto end_nanosec = std::chrono::high_resolution_clock::now();
+
+				// Log(is_duplicate, " ", detected, " ", e);
 
 				// Store time needed
 				time_insertion[s][u / num_filters][u % num_filters] += end_nanosec - begin_nanosec;

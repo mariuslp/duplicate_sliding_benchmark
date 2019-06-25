@@ -10,6 +10,10 @@ void StreamGenerator::PopSlidingWindow() {
 	if(--counter_sliding_window[e_to_remove] == 0) {  // Delete the entry: saves memory
 		counter_sliding_window.erase(e_to_remove);
 	}
+
+	// for(auto it = counter_sliding_window.begin();it != counter_sliding_window.end();it++)
+    // std::cout << (it->first) << " " << it->second;
+	// std::cout <<endl;
 }
 
 
