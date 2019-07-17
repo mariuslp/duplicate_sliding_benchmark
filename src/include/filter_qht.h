@@ -23,11 +23,11 @@ protected:
 
 	std::vector<Buckets> qht;
 
-	bool InCell(const uint64_t address, const uint8_t fingerprint) const;
+	bool InCell(const uint64_t address, const uint16_t fingerprint) const;
 
-	uint8_t Fingerprint(const Element& e);
+	uint16_t Fingerprint(const Element& e);
 
-	bool InsertEmpty(const uint64_t address, const uint8_t fingerprint);
+	bool InsertEmpty(const uint64_t address, const uint16_t fingerprint);
 
 public:
 	QHTFilter(const uint64_t memory_size, const size_t n_n_buckets, const size_t n_fingerprint_size);

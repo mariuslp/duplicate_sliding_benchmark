@@ -23,5 +23,5 @@ struct QQHTDCompactFilter : QHTDCompactFilter {
 	std::string name() const override { return "QQHTD compact"; };
 
 protected:
-    bool InsertFingerprintInLastBucket(const uint64_t address, const uint8_t fingerprint);
+    bool InsertFingerprintInLastBucket(const uint64_t address, const uint16_t fingerprint);
 };

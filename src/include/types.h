@@ -25,3 +25,9 @@ typedef std::uint8_t Bucket;
 
 /** Vector of buckets */
 typedef std::vector<Bucket> Buckets;
+
+/** Same, but with 16 bits */
+typedef std::uint16_t Bucket16;
+
+/** Vector of buckets */
+typedef std::vector<Bucket16> Buckets16;

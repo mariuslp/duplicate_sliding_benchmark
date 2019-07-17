@@ -23,7 +23,7 @@ bool QQHTDCompactFilter::Insert(const Element& e) {
 }
 
 
-bool QQHTDCompactFilter::InsertFingerprintInLastBucket(const uint64_t address, const uint8_t fingerprint) {
+bool QQHTDCompactFilter::InsertFingerprintInLastBucket(const uint64_t address, const uint16_t fingerprint) {
     /**
      * In QQHT, buckets behave like a queue. Therefore each new element is inserted at the end of the queue
      * Using a linked list would use additional bits of data (for storing pointers with history).

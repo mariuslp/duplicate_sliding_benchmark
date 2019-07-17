@@ -12,7 +12,7 @@ QHTCompactFilter::QHTCompactFilter(
 	assert(n_cells > 0);
 }
 
-uint8_t QHTCompactFilter::GetFingerprintFromBucket(const uint64_t address, const size_t bucket_number) const {
+uint16_t QHTCompactFilter::GetFingerprintFromBucket(const uint64_t address, const size_t bucket_number) const {
 
 	/**
 	 * All bits are stored in sequence.
@@ -24,7 +24,7 @@ uint8_t QHTCompactFilter::GetFingerprintFromBucket(const uint64_t address, const
 	 * @returns to be documented
 	 */
 
-	uint8_t fingerprint = 0;
+	uint16_t fingerprint = 0;
 
 	// The cell `address` starts here
 	auto offset = address * n_buckets * fingerprint_size;
@@ -42,7 +42,7 @@ uint8_t QHTCompactFilter::GetFingerprintFromBucket(const uint64_t address, const
 }
 
 
-bool QHTCompactFilter::InsertFingerprintInBucket(const uint64_t address, const size_t bucket_number, const uint8_t fingerprint) {
+bool QHTCompactFilter::InsertFingerprintInBucket(const uint64_t address, const size_t bucket_number, const uint16_t fingerprint) {
 	
 	/** Takes a fingerprint, and inserts it in the given bucket number of a given cell (address)
 	 * @param address
@@ -64,7 +64,7 @@ bool QHTCompactFilter::InsertFingerprintInBucket(const uint64_t address, const s
 	return true;
 }
 
-bool QHTCompactFilter::InCell(const uint64_t address, const uint8_t fingerprint) const {
+bool QHTCompactFilter::InCell(const uint64_t address, const uint16_t fingerprint) const {
 
 	/** Return true if a fingerprint is in one of the buckets of a given cell (address)
 	 * @param address
@@ -81,12 +81,12 @@ bool QHTCompactFilter::InCell(const uint64_t address, const uint8_t fingerprint)
 	return false;
 }
 
-bool QHTCompactFilter::InsertEmpty(const uint64_t address, const uint8_t fingerprint) {
+bool QHTCompactFilter::InsertEmpty(const uint64_t address, const uint16_t fingerprint) {
 
 	/** Inserts fingerprint in an empty bucket of the cell (address), if such bucket exists
 	 * @param address
 	 * @param fingerprint
-         * @returns true if element has been implemented, false otherwise
+     * @returns true if element has been inserted, false otherwise
 	 */
 
 	for(size_t i = 0; i < n_buckets; ++i) {
