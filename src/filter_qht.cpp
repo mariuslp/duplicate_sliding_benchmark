@@ -10,7 +10,7 @@ QHTFilter::QHTFilter(
 	array_size = memory_size / (n_buckets * fingerprint_size);
 	assert(array_size > 0);
 
-	assert(fingerprint_size <= 8);
+	assert(fingerprint_size <= 16);
 
 	std::random_device rd;
 	rng = std::mt19937(rd());
@@ -20,7 +20,7 @@ QHTFilter::QHTFilter(
 	Log("QHT, M = ", memory_size, " N = ", array_size, " k = ", n_buckets, "s = ", fingerprint_size);
 }
 
-bool QHTFilter::InCell(const uint64_t address, const uint8_t fingerprint) const {
+bool QHTFilter::InCell(const uint64_t address, const uint16_t fingerprint) const {
 	for(Bucket bucket : qht.at(address)) {
 		if(bucket == fingerprint) {
 			return true;
@@ -39,23 +39,23 @@ bool QHTFilter::InCell(const uint64_t address, const uint8_t fingerprint) const 
  * @param Element e
  * @return int fingerprint of e
  */
-uint8_t QHTFilter::Fingerprint(const Element& e) {
+uint16_t QHTFilter::Fingerprint(const Element& e) {
 	// Note: the hash must be independent from Hash1 which already provides `address`
 	HashValue hash = Hash2(e);
 
-	uint8_t fingerprint = static_cast<uint8_t>(hash % pow2(fingerprint_size));
+	uint16_t fingerprint = static_cast<uint16_t>(hash % pow2(fingerprint_size));
 
 	int adder = 0;
 	// TODO std::hash(hash + ++adder) seems to have poor statistical properties as this loop is run a bit too often to my taste
 	while(fingerprint == 0) {
 		boost::hash_combine(hash, hash + ++adder);  // adder avoids potential infinite loops with fixed points (such as 11754104648456392440)
-		fingerprint = static_cast<uint8_t>(hash % pow2(fingerprint_size));
+		fingerprint = static_cast<uint16_t>(hash % pow2(fingerprint_size));
 	}
 
 	return fingerprint;
 }
 
-bool QHTFilter::InsertEmpty(const uint64_t address, const uint8_t fingerprint) {
+bool QHTFilter::InsertEmpty(const uint64_t address, const uint16_t fingerprint) {
 	for(Bucket& bucket : qht.at(address)) {
 		if(bucket == 0) {
 			bucket = fingerprint;

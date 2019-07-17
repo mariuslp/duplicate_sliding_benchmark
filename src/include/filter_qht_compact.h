@@ -38,13 +38,13 @@ protected:
 	size_t n_cells;
 
 	/* Check if `fingerprint` is one of the buckets of the cell `address` */
-	bool InCell(const uint64_t address, const uint8_t fingerprint) const;
+	bool InCell(const uint64_t address, const uint16_t fingerprint) const;
 
 	/* Insert fingerprint in one of the empty buckets of address. Returns true, false if no empty bucket */
-	bool InsertEmpty(const uint64_t address, const uint8_t fingerprint);
+	bool InsertEmpty(const uint64_t address, const uint16_t fingerprint);
 
 	/* Insert fingerprint in random bucket of cell address */
-	bool InsertFingerprintInBucket(const uint64_t address, const size_t bucket_number, const uint8_t fingerprint);
+	bool InsertFingerprintInBucket(const uint64_t address, const size_t bucket_number, const uint16_t fingerprint);
 
 	/* Retreive a fingerprint from bucket `bucket_number` of cell `address` */
 	uint8_t GetFingerprintFromBucket(const uint64_t address, const size_t bucket_number) const;
