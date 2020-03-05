@@ -27,12 +27,13 @@ struct QHTCompactFilter : QHTFilter {
 	void debug() const override;
 
 	std::string name() const override { return "QHT compact"; };
+	std::vector<bool> qht;
+
 
 protected:
 	/* QHT storage. We only use an array of bits for which we precisely control the size.
 	 * Buckets (and cells) are emulated
 	 */
-	std::vector<bool> qht;
 
 	/** Shortcut for the number of cells in the filter (N) */
 	size_t n_cells;

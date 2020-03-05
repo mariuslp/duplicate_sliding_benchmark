@@ -20,6 +20,7 @@
 #include "filter_qht_compact.h"
 #include "filter_qhtd_compact.h"
 #include "filter_qqhtd_compact.h"
+#include "filter_queue.h"
 
 /** Runs tests */
 void run_tests();

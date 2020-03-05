@@ -19,27 +19,26 @@ void run_tests() {
 	// -----
 
 	// Length of the test stream
-	const auto stream_length	= 150000000; //10000000;
+	const auto stream_length	= 10000000; //10000000;
 
 	// Number of tested filters 
-	const auto num_filters 		= 3; //6;
+	const auto num_filters 		= 3;
 
 	// Number of streams
-	const auto num_streams 		= 1;
+	const auto num_streams 		= 3;
 
     // Number of memory variations for each filters
-	const auto num_multipliers 	= 1; //9;
+	const auto num_multipliers 	= 1;
 
 	// Amount of memory available to filters
-	const auto memory 		= 1000000; // 10e6
+	const auto memory 		= 100000; // 10e6
 
 	// Memory variations for each filter
 	double memory_multipliers [num_multipliers] = {1};
-	// double memory_multipliers [num_multipliers] = {0.1, 10}; //{200, 100, 60, 30, 10, 1, 0.1, 0.01, 0.001};
 
 	// duh
-	const auto num_sliding_window = 10;
-	int sliding_window_sizes [num_sliding_window] = {100, 1000, 3000, 10000, 30000, 100000, 300000, 1000000, 3000000, 10000000}; //{100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
+	const auto num_sliding_window = 1;
+	int sliding_window_sizes [num_sliding_window] = {1000}; //{100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
 
 	// Collection of streams
 	std::vector<std::unique_ptr<StreamGenerator> > streams;
@@ -51,10 +50,9 @@ void run_tests() {
 
 	for(auto W : sliding_window_sizes) {
 		// Assemble the stream collection
-		// streams.push_back(std::make_unique<UniformGenerator>(30, W));
-		//streams.push_back(std::make_unique<UniformGenerator>(27, W));
-		streams.push_back(std::make_unique<UniformGenerator>(26, W));  // USE ME
-		// streams.push_back(std::make_unique<UniformGenerator>(2, W));
+		streams.push_back(std::make_unique<UniformGenerator>(24, W));  // USE ME
+		streams.push_back(std::make_unique<UniformGenerator>(20, W));
+		streams.push_back(std::make_unique<UniformGenerator>(16, W));
 	} // 2 loops for easier result reading
 	for(auto W : sliding_window_sizes) {
 		// streams.push_back(std::make_unique<RealGenerator>("hash_sorted.dat", W));
@@ -66,30 +64,9 @@ void run_tests() {
 
 	for(auto multiplier : memory_multipliers) {
 		uint64_t memsize = multiplier * memory;
-
-		// filters.push_back(std::make_unique<SQFilter>(memsize, 1, 2, 1));
-		// // //filters.push_back(std::make_unique<QHTFilter>(memsize, 1, 3));
-		// filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 3));
-		// filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 8));
-		// // filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 9));
-		// // //filters.push_back(std::make_unique<QQHTDCompactFilter>(memsize, 1, 3));
-		// filters.push_back(std::make_unique<CuckooFilter>(memsize, 3, 1));
-		// filters.push_back(std::make_unique<StableBloomFilter>(memsize, 2, 2, 0.02));
-		// filters.push_back(std::make_unique<A2Filter>(memsize, 0.1));
-		// filters.push_back(std::make_unique<bDecayingBloomFilter>(memsize, 6000));
-
-
-		// filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 2));
-		// filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 3));
-		// filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 4));
-		// filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 5));
-		// filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 6));
-		// filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 7));
-		filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 8));
-		filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 9));
-		filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 10));
-		// filters.push_back(std::make_unique<QHTCompactFilter>(memsize, 1, 11));
-
+		filters.push_back(std::make_unique<QQHTDCompactFilter>(memsize, 1, 8));
+		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 5, 1000));
+		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 50, 1000));
     }
 
 	assert(filters.size() == num_filters * num_multipliers);
@@ -245,12 +222,12 @@ void run_tests() {
 			std::cout << memory * memory_multipliers[m] << "\t |";
 
 			for(size_t f = 0; f < num_filters; ++f) {
-				std::cout << /*round_dec(results[st][m][f][0]) 
+				std::cout << round_dec(results[st][m][f][0]) 
 					  << "/" 
 					  << round_dec(results[st][m][f][1]) 
 					  << " (" 
-					  << */round_dec(results[st][m][f][0] + results[st][m][f][1]) 
-					  /*<< ") */<<"\t | ";
+					  << round_dec(results[st][m][f][0] + results[st][m][f][1]) 
+					  << ")" <<"\t | ";
 			}
 			std::cout << std::endl;
 		}

@@ -21,7 +21,7 @@ QHTFilter::QHTFilter(
 
 	bucket_selector = std::uniform_int_distribution<size_t>(0, n_buckets - 1);
 
-	Log("QHT, M = ", memory_size, " N = ", array_size, " k = ", n_buckets, "s = ", fingerprint_size);
+	// Log("QHT, M = ", memory_size, " N = ", array_size, " k = ", n_buckets, "s = ", fingerprint_size);
 }
 
 bool QHTFilter::InCell(const uint64_t address, const uint16_t fingerprint) const {

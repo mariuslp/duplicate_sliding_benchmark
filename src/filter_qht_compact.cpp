@@ -105,7 +105,6 @@ bool QHTCompactFilter::Lookup(const Element& e) {
      * @param e
 	 * @returns boolean
 	 */
-
 	size_t address = Hash1(e) % n_cells;
 	auto fingerprint = Fingerprint(e);
 
