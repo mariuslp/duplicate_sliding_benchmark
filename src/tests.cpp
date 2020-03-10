@@ -19,10 +19,10 @@ void run_tests() {
 	// -----
 
 	// Length of the test stream
-	const auto stream_length	= 10000000; //10000000;
+	const auto stream_length	= 1000000; //10000000;
 
 	// Number of tested filters 
-	const auto num_filters 		= 3;
+	const auto num_filters 		= 7;
 
 	// Number of streams
 	const auto num_streams 		= 3;
@@ -31,14 +31,15 @@ void run_tests() {
 	const auto num_multipliers 	= 1;
 
 	// Amount of memory available to filters
-	const auto memory 		= 100000; // 10e6
+	const auto memory 		= 1000000; // 10e6
 
 	// Memory variations for each filter
 	double memory_multipliers [num_multipliers] = {1};
 
 	// duh
 	const auto num_sliding_window = 1;
-	int sliding_window_sizes [num_sliding_window] = {1000}; //{100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
+	const auto sliding_window = 10000;
+	int sliding_window_sizes [num_sliding_window] = {sliding_window}; //{100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
 
 	// Collection of streams
 	std::vector<std::unique_ptr<StreamGenerator> > streams;
@@ -50,8 +51,8 @@ void run_tests() {
 
 	for(auto W : sliding_window_sizes) {
 		// Assemble the stream collection
-		streams.push_back(std::make_unique<UniformGenerator>(24, W));  // USE ME
-		streams.push_back(std::make_unique<UniformGenerator>(20, W));
+		streams.push_back(std::make_unique<UniformGenerator>(20, W));  // USE ME
+		streams.push_back(std::make_unique<UniformGenerator>(18, W));
 		streams.push_back(std::make_unique<UniformGenerator>(16, W));
 	} // 2 loops for easier result reading
 	for(auto W : sliding_window_sizes) {
@@ -64,9 +65,15 @@ void run_tests() {
 
 	for(auto multiplier : memory_multipliers) {
 		uint64_t memsize = multiplier * memory;
-		filters.push_back(std::make_unique<QQHTDCompactFilter>(memsize, 1, 8));
-		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 5, 1000));
-		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 50, 1000));
+		// filters.push_back(std::make_unique<QQHTDCompactFilter>(memsize, 1, 8));
+		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 1, sliding_window));
+		// filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 2, sliding_window));
+		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 10, sliding_window));
+		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 20, sliding_window));
+		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 30, sliding_window));
+		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 40, sliding_window));
+		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 50, sliding_window));
+		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 100, sliding_window));
     }
 
 	assert(filters.size() == num_filters * num_multipliers);
@@ -132,9 +139,9 @@ void run_tests() {
 		// Generate stream
 		for(auto i = 0; i < stream_length; ++i) {
 
-			if(i % 50000000 == 0) {
-				Log(i);
-			}
+			// if(i % 50000000 == 0) {
+			// 	Log(i);
+			// }
 			
 			// Get the next element
 			auto e = stream->Next();
