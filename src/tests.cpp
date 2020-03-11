@@ -66,14 +66,14 @@ void run_tests() {
 	for(auto multiplier : memory_multipliers) {
 		uint64_t memsize = multiplier * memory;
 		// filters.push_back(std::make_unique<QQHTDCompactFilter>(memsize, 1, 8));
-		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 1, sliding_window));
+		filters.push_back(std::make_unique<QueueQQHTDFilter>(memsize, 1, 8, 1, sliding_window));
 		// filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 2, sliding_window));
-		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 10, sliding_window));
-		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 20, sliding_window));
-		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 30, sliding_window));
-		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 40, sliding_window));
-		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 50, sliding_window));
-		filters.push_back(std::make_unique<QueueFilter>(memsize, 1, 8, 100, sliding_window));
+		filters.push_back(std::make_unique<QueueQQHTDFilter>(memsize, 1, 8, 10, sliding_window));
+		filters.push_back(std::make_unique<QueueQQHTDFilter>(memsize, 1, 8, 20, sliding_window));
+		filters.push_back(std::make_unique<QueueQQHTDFilter>(memsize, 1, 8, 30, sliding_window));
+		filters.push_back(std::make_unique<QueueQQHTDFilter>(memsize, 1, 8, 40, sliding_window));
+		filters.push_back(std::make_unique<QueueQQHTDFilter>(memsize, 1, 8, 50, sliding_window));
+		filters.push_back(std::make_unique<QueueQQHTDFilter>(memsize, 1, 8, 100, sliding_window));
     }
 
 	assert(filters.size() == num_filters * num_multipliers);
