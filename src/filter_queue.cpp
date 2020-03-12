@@ -1,5 +1,4 @@
 #include "filter_queue.h"
-#include <math.h>
 #include "logger.h"
 
 bool QueueFilter::Lookup(const Element& e) {
@@ -20,8 +19,10 @@ bool QueueFilter::Insert(const Element& e) {
 
     if(counter == elements_per_filter) {
         queue.pop_back();
-        auto new_filter = Init();
-        queue.push_front(std::unique_ptr<Filter>(&new_filter);
+
+        // Creates a fresh filter and adds it to the queue
+        create_fresh_filter();
+        
         queue[0]->Reset();
         counter = 0;
     }
