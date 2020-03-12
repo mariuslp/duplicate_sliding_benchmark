@@ -9,10 +9,9 @@
 #include "filter_qqhtd_compact.h"
 
 struct QueueFilter : Filter {
-private:
+protected:
     virtual void create_fresh_filter() = 0;
 
-protected:
     std::deque<std::unique_ptr<Filter>> queue;
     size_t counter;
     size_t number_filters;
@@ -21,6 +20,7 @@ protected:
     size_t memory_per_filter;
 
 public:
+    QueueFilter(size_t memory_size, size_t n_number_filters, size_t n_sliding_window);
     bool Insert(const Element& e);
     bool Lookup(const Element& e);
     virtual void debug() const;

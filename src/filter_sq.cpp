@@ -29,7 +29,7 @@ SQFilter::SQFilter(
 
     address_mask = hash_mask & ~remainder_mask;
 
-    Log("Creating SQF, ", memory_size, " bits max, N = ", pow2(array_bits), " k =", n_buckets, ", r = ", unsigned(remainder_bits), " r' = ", unsigned(reduced_remainder_bits));
+    // Log("Creating SQF, ", memory_size, " bits max, N = ", pow2(array_bits), " k =", n_buckets, ", r = ", unsigned(remainder_bits), " r' = ", unsigned(reduced_remainder_bits));
 }
 
 bool SQFilter::InCell(const uint64_t address, const uint8_t fingerprint) const {

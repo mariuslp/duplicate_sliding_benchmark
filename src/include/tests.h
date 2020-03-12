@@ -22,6 +22,9 @@
 #include "filter_qqhtd_compact.h"
 
 #include "queue_qqhtd.h"
+#include "queue_cuckoo.h"
+#include "queue_stablebloom.h"
+#include "queue_sq.h"
 
 /** Runs tests */
 void run_tests();
