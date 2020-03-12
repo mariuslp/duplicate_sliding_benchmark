@@ -12,6 +12,6 @@ protected:
     uint8_t reduced_remainder_bits;
 
 public:
-    QueueSQFilter(size_t memory_size, size_t n_n_buckets, uint8_t remainder_bits, uint8_t reduced_remainder_bits, size_t n_number_filters, size_t n_sliding_window);
+    QueueSQFilter(size_t memory_size, size_t n_n_buckets, uint8_t n_remainder_bits, uint8_t n_reduced_remainder_bits, size_t n_number_filters, size_t n_sliding_window);
     std::string name() const { return "Queueing SQF"; };
 };
