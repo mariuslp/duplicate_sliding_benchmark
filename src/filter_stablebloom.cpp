@@ -9,6 +9,8 @@ StableBloomFilter::StableBloomFilter(const uint64_t memory_size, const uint8_t d
 	k             = n_hash_functions;
 	fp_max        = max_false_positive;
 
+	// Log((size_t) bits_per_cell, " ", array_size, " ", memory_size, k);
+
 	stableFilter.assign(array_size, 0);
 
 	max_value = pow2(d) - 1;
